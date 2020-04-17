@@ -23,7 +23,7 @@
 
     <dubbo:application name="demo-consumer"/>
 
-    <dubbo:registry address="zookeeper://10.182.47.48:2181" />
+    <dubbo:registry address="zookeeper://wmsi18zk-zookeeper-1-0:2181" />
 
     <!-- generate proxy for the remote service, then demoService can be used in the same way as the
     local regular interface -->
