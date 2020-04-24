@@ -113,6 +113,11 @@ final class HeaderExchangeChannel implements ExchangeChannel {
         req.setData(request);
         DefaultFuture future = DefaultFuture.newFuture(channel, req, timeout);
         try {
+            /**
+             * 通过NettyClient发送请求，NettyClient目前还是dubbo封装的对象
+             * NettyClient extends AbstractClient extends AbstractPeer
+             * 最终调用的是AbstractPeer.send方法
+             */
             channel.send(req);
         } catch (RemotingException e) {
             future.cancel();

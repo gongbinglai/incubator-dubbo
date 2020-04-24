@@ -78,6 +78,7 @@ public class HeaderExchangeClient implements ExchangeClient {
 
     @Override
     public ResponseFuture request(Object request, int timeout) throws RemotingException {
+        //HeaderExchangeChannel
         return channel.request(request, timeout);
     }
 

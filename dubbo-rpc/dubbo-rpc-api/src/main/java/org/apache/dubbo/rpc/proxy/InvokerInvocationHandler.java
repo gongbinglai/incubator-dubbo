@@ -41,6 +41,7 @@ public class InvokerInvocationHandler implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         String methodName = method.getName();
         Class<?>[] parameterTypes = method.getParameterTypes();
+        //判断方法，如果是object方法，如toString，hashCode，equals直接调用Object对象的方法
         if (method.getDeclaringClass() == Object.class) {
             return method.invoke(invoker, args);
         }
@@ -53,7 +54,7 @@ public class InvokerInvocationHandler implements InvocationHandler {
         if ("equals".equals(methodName) && parameterTypes.length == 1) {
             return invoker.equals(args[0]);
         }
-
+        //MockClusterInvoker  Mock 虚假的
         return invoker.invoke(createInvocation(method, args)).recreate();
     }
 

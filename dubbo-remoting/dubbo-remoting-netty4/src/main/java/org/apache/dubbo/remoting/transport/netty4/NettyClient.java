@@ -163,6 +163,18 @@ public class NettyClient extends AbstractClient {
         if (c == null || !c.isActive()) {
             return null;
         }
+        /**
+         * 1、这里返回的channel为NettyChannel，而NettyChannel里依赖的channel为NioSocketChannel，为netty实现的channel通道
+         * 2、dubbo通信协议默认为dubbo协议，格式如下：
+         * dubbo://10.0.104.122:20880/org.apache.dubbo.demo.DemoService?anyhost=true
+             &application=demo-consumer
+             &bean.name=org.apache.dubbo.demo.DemoService
+             &check=false&codec=dubbo&dubbo=2.0.2&generic=false
+             &group=&heartbeat=60000
+             &interface=org.apache.dubbo.demo.DemoService&methods=sayHello
+             &pid=13496&qos.port=33333&register.ip=10.0.104.122&remote.application=demo-provider
+             &remote.timestamp=1587712016866&side=consumer&timestamp=1587714452307
+         */
         return NettyChannel.getOrAddChannel(c, getUrl(), this);
     }
 

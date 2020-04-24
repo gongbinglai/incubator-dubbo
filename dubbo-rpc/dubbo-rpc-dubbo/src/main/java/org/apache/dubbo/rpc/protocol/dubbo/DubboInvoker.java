@@ -105,6 +105,11 @@ public class DubboInvoker<T> extends AbstractInvoker<T> {
                 return result;
             } else {
                 RpcContext.getContext().setFuture(null);
+                /*
+                 * 1、ReferenceCountExchangeClient，在rpc模块下，通信协议默认为dubbo，还支持hession，webservice，thift
+                 * 2、rpc为通信协议模块，底层通信在remoting模块，底层通信支持http netty p2p
+                 * 3、返回对象为ResponseFuture，通过get获取返回值
+                 */
                 return (Result) currentClient.request(inv, timeout).get();
             }
         } catch (TimeoutException e) {
