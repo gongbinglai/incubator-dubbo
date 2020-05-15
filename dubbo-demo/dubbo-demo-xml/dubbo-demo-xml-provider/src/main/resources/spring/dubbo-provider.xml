@@ -23,14 +23,17 @@
 
     <!-- provider's application name, used for tracing dependency relationship -->
     <dubbo:application name="demo-provider"/>
-
     <!--
     <dubbo:registry address="multicast://224.5.6.7:1234" />
     -->
     <dubbo:registry address="zookeeper://wmsi18zk-zookeeper-1-0:2181" />
-
-    <!-- use dubbo protocol to export service on port 20880 -->
-    <dubbo:protocol name="dubbo"/>
+    <!--
+    1、use dubbo protocol to export service on port 20880
+    2、通信协议默认为dubbo
+    3、通过serialization来配置序列化方式，dubbo协议缺省为hessian2，rmi协议缺省为java，http协议缺省为json
+    4、server： dubbo协议缺省为netty，http协议缺省为servlet
+    -->
+    <dubbo:protocol name="dubbo" serialization="hessian2"/>
 
     <!-- service implementation, as same as regular local bean -->
     <bean id="demoService" class="org.apache.dubbo.demo.provider.DemoServiceImpl"/>

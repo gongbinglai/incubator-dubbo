@@ -227,3 +227,28 @@ Please report security vulnerability to [us](security@dubbo.incubator.apache.org
 ## License
 
 Apache Dubbo is under the Apache 2.0 license. See the [LICENSE](https://github.com/apache/incubator-dubbo/blob/master/LICENSE) file for details.
+
+
+
+# dubbo 配置使用文档
+
+https://dubbo.apache.org/zh-cn/docs/user/references/xml/dubbo-service.html
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

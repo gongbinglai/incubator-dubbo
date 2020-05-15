@@ -46,6 +46,7 @@ public class FutureFilter implements Filter {
         fireInvokeCallback(invoker, invocation);
         // need to configure if there's return value before the invocation in order to help invoker to judge if it's
         // necessary to return future.
+        //最终调用的是DubboInvoker
         return invoker.invoke(invocation);
     }
 
