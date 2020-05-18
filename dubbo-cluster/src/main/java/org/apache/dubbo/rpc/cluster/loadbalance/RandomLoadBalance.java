@@ -25,6 +25,11 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * random load balance.
+ * 加权随机算法:
+ * 假设我们有一组服务器 servers = [A, B, C]，他们对应的权重为 weights = [5, 3, 2]，权重总和为10。
+ * 现在把这些权重值平铺在一维坐标值上，[0, 5) 区间属于服务器 A，[5, 8) 区间属于服务器 B，[8, 10) 区间属于服务器 C。
+ * 接下来通过随机数生成器生成一个范围在 [0, 10) 之间的随机数，然后计算这个随机数会落到哪个区间上。
+ * 比如数字3会落到服务器 A 对应的区间上，此时返回服务器 A 即可。权重越大的机器，在坐标轴上对应的区间范围就越大，因此随机数生成器生成的数字就会有更大的概率落到此区间内。
  */
 public class RandomLoadBalance extends AbstractLoadBalance {
 
@@ -65,6 +70,7 @@ public class RandomLoadBalance extends AbstractLoadBalance {
             }
         }
         // If all invokers have the same weight value or totalWeight=0, return evenly.
+        // 如果所有服务提供者权重值相同，此时直接随机返回一个即可
         return invokers.get(ThreadLocalRandom.current().nextInt(length));
     }
 

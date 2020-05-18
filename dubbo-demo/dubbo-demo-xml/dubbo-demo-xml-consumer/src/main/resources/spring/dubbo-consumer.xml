@@ -28,11 +28,11 @@
     <!--
     1、retries，远程服务调用重试次数，不包括第一次调用，不需要重试请设为0,仅在cluster为failback/failover时有效
     2、loadbalance，配置负载均衡策略，默认为随机，random,roundrobin,leastactive，分别表示：随机，轮询，最少活跃调用
-    3、async，是否缺省异步执行，默认false，不可靠异步，只是忽略返回值，不阻塞执行线程
+    3、async，是否缺省异步执行，默认false
     4、cluster，集群方式，可选：failover/failfast/failsafe/failback/forking
     5、proxy，生成代理的方式，jdk/javassist
     -->
-    <dubbo:consumer retries="0" loadbalance="roundrobin" async="false" cluster="failover" proxy="javassist"></dubbo:consumer>
+    <dubbo:consumer retries="0" loadbalance="random" async="false" cluster="failover" proxy="javassist"></dubbo:consumer>
 
     <!-- generate proxy for the remote service, then demoService can be used in the same way as the
     local regular interface -->

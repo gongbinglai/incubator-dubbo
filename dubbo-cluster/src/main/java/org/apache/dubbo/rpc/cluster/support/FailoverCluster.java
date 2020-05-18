@@ -23,6 +23,10 @@ import org.apache.dubbo.rpc.cluster.Directory;
 
 /**
  * {@link FailoverClusterInvoker}
+ * Dubbo 提供了多种集群实现，包含但不限于 Failover Cluster、Failfast Cluster 和 Failsafe Cluster 等
+ *
+ *
+ *
  *
  */
 public class FailoverCluster implements Cluster {

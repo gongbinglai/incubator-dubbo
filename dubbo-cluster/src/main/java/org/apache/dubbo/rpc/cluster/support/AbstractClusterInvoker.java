@@ -147,6 +147,7 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> {
         if (CollectionUtils.isEmpty(invokers)) {
             return null;
         }
+        //如果只有1个invoker
         if (invokers.size() == 1) {
             return invokers.get(0);
         }

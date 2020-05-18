@@ -74,8 +74,10 @@ public class FailoverClusterInvoker<T> extends AbstractClusterInvoker<T> {
                 // check again
                 checkInvokers(copyInvokers, invocation);
             }
-            //获取真正要执行的Invoker
+            //根据负载均衡策略，获取真正要执行的Invoker，AbstractClusterInvoker
             Invoker<T> invoker = select(loadbalance, invocation, copyInvokers, invoked);
+
+            //记录已经执行过的Invoker
             invoked.add(invoker);
             RpcContext.getContext().setInvokers((List) invoked);
             try {
