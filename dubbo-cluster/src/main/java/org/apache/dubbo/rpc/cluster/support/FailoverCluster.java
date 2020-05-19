@@ -23,10 +23,13 @@ import org.apache.dubbo.rpc.cluster.Directory;
 
 /**
  * {@link FailoverClusterInvoker}
+ * 当服务调用失败时的处理措施也是需要考虑的，是重试呢，还是抛出异常，亦或是只打印异常等。为了处理这些问题，Dubbo 定义了集群接口 Cluster 以及 Cluster Invoker。
  * Dubbo 提供了多种集群实现，包含但不限于 Failover Cluster、Failfast Cluster 和 Failsafe Cluster 等
- *
- *
- *
+ * Failover Cluster - 失败自动切换
+   Failfast Cluster - 快速失败
+   Failsafe Cluster - 失败安全
+   Failback Cluster - 失败自动恢复
+   Forking Cluster - 并行调用多个服务提供者
  *
  */
 public class FailoverCluster implements Cluster {
