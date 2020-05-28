@@ -85,7 +85,8 @@ public class DubboInvoker<T> extends AbstractInvoker<T> {
              * 1、oneway 指的是客户端发送消息后，不需要接受响应。对于那些不关心服务端响应的请求，比较适合使用 oneway 通信。
              * 注意，void hello() 方法在远程方法调用中，不属于 oneway 调用，虽然 void 方法表达了不关心返回值的语义，但在 RPC 层面，仍然需要做通信层的响应。
              * 2、sync，同步调用，是最常用的通信方式，也是默认的通信方法
-             * 3、future 和 callback 都属于异步调用的范畴，他们的区别是：在接收响应时，future.get() 会导致线程的阻塞;callback 通常会设置一个回调线程，当接收到响应时，自动执行，不会对当前线程造成阻塞。
+             * 3、future 和 callback 都属于异步调用的范畴，他们的区别是：在接收响应时，future.get() 会导致线程的阻塞;
+             * callback 通常会设置一个回调线程，当接收到响应时，自动执行，不会对当前线程造成阻塞。
              **/
             boolean isAsync = RpcUtils.isAsync(getUrl(), invocation);
             boolean isAsyncFuture = RpcUtils.isReturnTypeFuture(inv);
@@ -116,9 +117,9 @@ public class DubboInvoker<T> extends AbstractInvoker<T> {
                 /*
                  * 1、ReferenceCountExchangeClient，在rpc模块下，通信协议默认为dubbo，还支持hession，webservice，thift
                  * 2、rpc为通信协议模块，底层通信在remoting模块，底层通信支持http netty p2p
-                 * 3、返回对象为ResponseFuture，通过get获取返回值
+                 * 3、返回对象为ResponseFuture，通过get获取返回值，通过get获取方法返回值，会阻塞线程，等待返回值，对应的实现为
+                 * DefaultFuture
                  */
-                //同步调用，此时直接通过get获取方法返回值，会阻塞线程，等待返回值
                 return (Result) currentClient.request(inv, timeout).get();
             }
         } catch (TimeoutException e) {

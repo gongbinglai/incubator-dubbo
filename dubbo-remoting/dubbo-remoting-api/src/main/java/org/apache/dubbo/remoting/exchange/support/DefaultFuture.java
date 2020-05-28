@@ -169,12 +169,20 @@ public class DefaultFuture implements ResponseFuture {
         if (timeout <= 0) {
             timeout = Constants.DEFAULT_TIMEOUT;
         }
+        /**
+         * 判断是否已经获取到response  response != null;
+         */
         if (!isDone()) {
             long start = System.currentTimeMillis();
+            //获取锁，ReentrantLock
             lock.lock();
             try {
+                //while循环，等待获取response
                 while (!isDone()) {
+                    //final Condition done = lock.newCondition();  等待条件变量满足，等待done.signal
                     done.await(timeout, TimeUnit.MILLISECONDS);
+
+                    //volatile Response response，因为是volatile，所以其它线程设置的值，当前线程可以看到，保证了可见性
                     if (isDone() || System.currentTimeMillis() - start > timeout) {
                         break;
                     }
@@ -288,6 +296,7 @@ public class DefaultFuture implements ResponseFuture {
         if (res == null) {
             throw new IllegalStateException("response cannot be null");
         }
+        //获取结果
         if (res.getStatus() == Response.OK) {
             return res.getResult();
         }
@@ -326,13 +335,16 @@ public class DefaultFuture implements ResponseFuture {
     }
 
     private void doReceived(Response res) {
+        //获取锁
         lock.lock();
         try {
             response = res;
+            //通知在done条件变量上等待的线程来读取响应
             if (done != null) {
                 done.signal();
             }
         } finally {
+            //释放锁
             lock.unlock();
         }
         if (callback != null) {
