@@ -144,6 +144,7 @@ public class DefaultFuture implements ResponseFuture {
 
     public static void received(Channel channel, Response response) {
         try {
+            //从Futures中获取请求对应的future，调用DefaultFuture.doReceived
             DefaultFuture future = FUTURES.remove(response.getId());
             if (future != null) {
                 future.doReceived(response);
@@ -270,6 +271,7 @@ public class DefaultFuture implements ResponseFuture {
 
         if (res.getStatus() == Response.OK) {
             try {
+                //调用的的FutureAdapter Callback方法，将值设置到Future中，然后future.get就可以获取到值
                 callbackCopy.done(res.getResult());
             } catch (Exception e) {
                 logger.error("callback invoke error .result:" + res.getResult() + ",url:" + channel.getUrl(), e);
@@ -341,6 +343,7 @@ public class DefaultFuture implements ResponseFuture {
             response = res;
             //通知在done条件变量上等待的线程来读取响应
             if (done != null) {
+                //signal or signalAll?
                 done.signal();
             }
         } finally {

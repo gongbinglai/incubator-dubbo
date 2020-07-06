@@ -106,11 +106,34 @@ final class HeaderExchangeChannel implements ExchangeChannel {
         if (closed) {
             throw new RemotingException(this.getLocalAddress(), null, "Failed to send request " + request + ", cause: The channel " + this + " is closed!");
         }
-        // create request.
+        // create request.创建请求对象，也就是传输数据协议，请求中记录了请求id，版本，data数据
+        /**
+         *  请求id：通过AtomicLong.getAndIncrement()来获取请求的id
+         *  version：dubbo的传输数据协议版本 ，2.0.2
+         *  twoWay：双向通信，即可以发送数据，也可以响应数据
+         *  data：请求的数据
+         */
+
         Request req = new Request();
         req.setVersion(Version.getProtocolVersion());
         req.setTwoWay(true);
         req.setData(request);
+
+        /**
+         * 请求时创建DefaultFuture对象，此对象很关键，用来后续映射响应的结果
+         *  private DefaultFuture(Channel channel, Request request, int timeout) {
+                 this.channel = channel;  //channel 请求通道
+                 this.request = request; //请求数据
+                 this.id = request.getId(); //请求id
+                 this.timeout = timeout > 0 ? timeout : channel.getUrl().getPositiveParameter(Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT);
+                 // put into waiting map.
+                 FUTURES.put(id, this); //保存请求id和future关系，通过ConcurrentHashMap来保存
+                 CHANNELS.put(id, channel); //保存请求id和channel关系，通过ConcurrentHashMap来保存
+            }
+         *  private static final Map<Long, Channel> CHANNELS = new ConcurrentHashMap<>();
+            private static final Map<Long, DefaultFuture> FUTURES = new ConcurrentHashMap<>();
+         *
+         */
         DefaultFuture future = DefaultFuture.newFuture(channel, req, timeout);
         try {
             /**

@@ -99,9 +99,17 @@ public class DubboInvoker<T> extends AbstractInvoker<T> {
                 RpcContext.getContext().setFuture(null);
                 return new RpcResult();
             } else if (isAsync) { //异步调用
+
+                /**
+                 * 异步调用时，请求返回的是future对象，在请求的时候设置请求->future关系，然后当有结果返回的时候，
+                 * 根据获取的结果设置请求->future，这样就可以获取请求结果了
+                 */
                 ResponseFuture future = currentClient.request(inv, timeout);
                 // For compatibility
                 FutureAdapter<Object> futureAdapter = new FutureAdapter<>(future);
+
+                //上下文ctx，很重要，封装了请求的上下文，ctx为InternalThreadLocal<RpcContext> LOCAL
+                //封装了future，invokers，invoker，attachments(map结构)
                 RpcContext.getContext().setFuture(futureAdapter);
 
                 Result result;

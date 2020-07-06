@@ -28,17 +28,28 @@
     -->
     <dubbo:registry address="zookeeper://wmsi18zk-zookeeper-1-0:2181" />
     <!--
+    服务提供者协议配置，配置序列化协议，通信方式
+
     1、use dubbo protocol to export service on port 20880
     2、通信协议默认为dubbo
     3、通过serialization来配置序列化方式，dubbo协议缺省为hessian2，rmi协议缺省为java，http协议缺省为json
-    4、server： dubbo协议缺省为netty，http协议缺省为servlet
+    4、server： 协议的服务端和客户端实现类型，dubbo协议缺省为netty，http协议缺省为servlet
+       client：协议的客户端实现类型，比如：dubbo协议的mina,netty等
+       transporter：协议的服务端和客户端实现类型，比如：dubbo协议的mina,netty等，可以分拆为server和client配置
     -->
     <dubbo:protocol name="dubbo" serialization="hessian2"/>
 
     <!-- service implementation, as same as regular local bean -->
     <bean id="demoService" class="org.apache.dubbo.demo.provider.DemoServiceImpl"/>
+    <bean id="asyncDemoService" class="org.apache.dubbo.demo.provider.AsyncDemoServiceImpl"/>
 
-    <!-- declare the service interface to be exported -->
+    <!--服务提供者缺省值配置-->
+    <dubbo:provider></dubbo:provider>
+
+    <!-- declare the service interface to be exported
+     服务提供者暴露服务配置
+     -->
     <dubbo:service interface="org.apache.dubbo.demo.DemoService" ref="demoService"/>
+    <dubbo:service interface="org.apache.dubbo.demo.AsyncDemoService" ref="asyncDemoService"/>
 
 </beans>

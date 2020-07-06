@@ -40,6 +40,8 @@ public class FutureAdapter<V> extends CompletableFuture<V> {
         future.setCallback(new ResponseCallback() {
             @Override
             public void done(Object response) {
+
+                //获取服务端返回的结果，然后设置到Future中
                 Result result = (Result) response;
                 FutureAdapter.this.resultFuture.complete(result);
                 V value = null;
@@ -48,6 +50,8 @@ public class FutureAdapter<V> extends CompletableFuture<V> {
                 } catch (Throwable t) {
                     FutureAdapter.this.completeExceptionally(t);
                 }
+                //设置CompletableFuture.result结果，get返回结果的时候也是返回result对象
+                //volatile Object result;
                 FutureAdapter.this.complete(value);
             }
 
