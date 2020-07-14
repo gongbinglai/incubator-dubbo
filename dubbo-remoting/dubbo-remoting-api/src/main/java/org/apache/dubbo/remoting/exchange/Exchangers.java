@@ -67,6 +67,7 @@ public class Exchangers {
             throw new IllegalArgumentException("handler == null");
         }
         url = url.addParameterIfAbsent(Constants.CODEC_KEY, "exchange");
+        //NettyTransporter，然后创建的是NettyServer
         return getExchanger(url).bind(url, handler);
     }
 

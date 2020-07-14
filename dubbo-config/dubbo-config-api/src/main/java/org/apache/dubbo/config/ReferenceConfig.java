@@ -364,6 +364,8 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
             }
 
             if (urls.size() == 1) {
+
+                //调用关系为Protocol$Adctive  -> ProtocolFilterWrapper -> ProtocolListenerWrapper -> RegistryProtocol
                 invoker = refprotocol.refer(interfaceClass, urls.get(0));
             } else {
                 List<Invoker<?>> invokers = new ArrayList<Invoker<?>>();

@@ -67,6 +67,7 @@ public class ZookeeperRegistry extends FailbackRegistry {
             group = Constants.PATH_SEPARATOR + group;
         }
         this.root = group;
+        //创建zkClient
         zkClient = zookeeperTransporter.connect(url);
         zkClient.addStateListener(state -> {
             if (state == StateListener.RECONNECTED) {
@@ -97,6 +98,7 @@ public class ZookeeperRegistry extends FailbackRegistry {
     @Override
     public void doRegister(URL url) {
         try {
+            //向zk注册中心注册接口服务地址
             zkClient.create(toUrlPath(url), url.getParameter(Constants.DYNAMIC_KEY, true));
         } catch (Throwable e) {
             throw new RpcException("Failed to register " + url + " to zookeeper " + getUrl() + ", cause: " + e.getMessage(), e);

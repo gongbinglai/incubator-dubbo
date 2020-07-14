@@ -50,6 +50,9 @@
      服务提供者暴露服务配置
      -->
     <dubbo:service interface="org.apache.dubbo.demo.DemoService" ref="demoService"/>
+
+    <!--
     <dubbo:service interface="org.apache.dubbo.demo.AsyncDemoService" ref="asyncDemoService"/>
+    -->
 
 </beans>

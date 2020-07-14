@@ -361,10 +361,12 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
     }
 
     static void appendRuntimeParameters(Map<String, String> map) {
+        //dubbo协议版本默认为2.0.2
         map.put(Constants.DUBBO_VERSION_KEY, Version.getProtocolVersion());
         map.put(Constants.RELEASE_KEY, Version.getVersion());
         map.put(Constants.TIMESTAMP_KEY, String.valueOf(System.currentTimeMillis()));
         if (ConfigUtils.getPid() > 0) {
+            //pid
             map.put(Constants.PID_KEY, String.valueOf(ConfigUtils.getPid()));
         }
     }

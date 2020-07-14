@@ -46,6 +46,15 @@ public class ProtocolFilterWrapper implements Protocol {
 
     private static <T> Invoker<T> buildInvokerChain(final Invoker<T> invoker, String key, String group) {
         Invoker<T> last = invoker;
+
+        /**
+         * 构造了过滤器链
+         * ConsumerContextFilter
+         * FutureFilter
+         * MonitorFilter
+         * 取得所有的过滤器扩展点
+         *
+         */
         List<Filter> filters = ExtensionLoader.getExtensionLoader(Filter.class).getActivateExtension(invoker.getUrl(), key, group);
         if (!filters.isEmpty()) {
             for (int i = filters.size() - 1; i >= 0; i--) {

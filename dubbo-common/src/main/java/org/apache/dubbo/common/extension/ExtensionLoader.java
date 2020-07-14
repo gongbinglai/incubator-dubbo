@@ -332,6 +332,7 @@ public class ExtensionLoader<T> {
      */
     @SuppressWarnings("unchecked")
     public T getExtension(String name) {
+
         if (StringUtils.isEmpty(name)) {
             throw new IllegalArgumentException("Extension name == null");
         }
@@ -344,6 +345,7 @@ public class ExtensionLoader<T> {
             synchronized (holder) {
                 instance = holder.get();
                 if (instance == null) {
+                    //创建扩展点实例
                     instance = createExtension(name);
                     holder.set(instance);
                 }
@@ -468,6 +470,7 @@ public class ExtensionLoader<T> {
 
     @SuppressWarnings("unchecked")
     public T getAdaptiveExtension() {
+        //获得自适应的拓展对象
         Object instance = cachedAdaptiveInstance.get();
         if (instance == null) {
             if (createAdaptiveInstanceError == null) {
@@ -476,6 +479,7 @@ public class ExtensionLoader<T> {
                     if (instance == null) {
                         try {
                             instance = createAdaptiveExtension();
+                            //缓存对象
                             cachedAdaptiveInstance.set(instance);
                         } catch (Throwable t) {
                             createAdaptiveInstanceError = t;
@@ -518,6 +522,8 @@ public class ExtensionLoader<T> {
 
     @SuppressWarnings("unchecked")
     private T createExtension(String name) {
+        //获取扩展点对应的class
+        //dubbo=org.apache.dubbo.rpc.protocol.dubbo.DubboProtocol
         Class<?> clazz = getExtensionClasses().get(name);
         if (clazz == null) {
             throw findException(name);
@@ -525,9 +531,11 @@ public class ExtensionLoader<T> {
         try {
             T instance = (T) EXTENSION_INSTANCES.get(clazz);
             if (instance == null) {
+                //通过clazz.newInstance创建对象
                 EXTENSION_INSTANCES.putIfAbsent(clazz, clazz.newInstance());
                 instance = (T) EXTENSION_INSTANCES.get(clazz);
             }
+            //注入扩展点依赖的属性
             injectExtension(instance);
             Set<Class<?>> wrapperClasses = cachedWrapperClasses;
             if (CollectionUtils.isNotEmpty(wrapperClasses)) {
@@ -545,7 +553,10 @@ public class ExtensionLoader<T> {
     private T injectExtension(T instance) {
         try {
             if (objectFactory != null) {
+
+                //通过反射获取类的方法
                 for (Method method : instance.getClass().getMethods()) {
+                    //如果存在setter方法，进行属性设置
                     if (isSetter(method)) {
                         /**
                          * Check {@link DisableInject} to see if we need auto injection for this property
@@ -559,6 +570,7 @@ public class ExtensionLoader<T> {
                         }
                         try {
                             String property = getSetterProperty(method);
+                            //设置扩展点依赖的属性值
                             Object object = objectFactory.getExtension(pt, property);
                             if (object != null) {
                                 method.invoke(instance, object);
