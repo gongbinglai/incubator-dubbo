@@ -64,8 +64,11 @@ public class NettyClient extends AbstractClient {
         final NettyClientHandler nettyClientHandler = new NettyClientHandler(getUrl(), this);
         bootstrap = new Bootstrap();
         bootstrap.group(nioEventLoopGroup)
+                //保持长连接，也就是dubbo客户端和服务端默认为长连接
                 .option(ChannelOption.SO_KEEPALIVE, true)
+                //tcp_nodelay有数据立马发送，也就是禁用nagles优化算法
                 .option(ChannelOption.TCP_NODELAY, true)
+                //设置内存分配器
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 //.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, getTimeout())
                 .channel(NioSocketChannel.class);

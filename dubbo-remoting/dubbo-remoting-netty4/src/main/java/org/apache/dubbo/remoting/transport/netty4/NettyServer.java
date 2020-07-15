@@ -84,7 +84,9 @@ public class NettyServer extends AbstractServer implements Server {
 
         bootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
+                //服务端有返回数据就发送
                 .childOption(ChannelOption.TCP_NODELAY, Boolean.TRUE)
+                //设置地址端口可重用，主要用来解决time_wait问题
                 .childOption(ChannelOption.SO_REUSEADDR, Boolean.TRUE)
                 .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .childHandler(new ChannelInitializer<NioSocketChannel>() {
@@ -96,7 +98,7 @@ public class NettyServer extends AbstractServer implements Server {
                         ch.pipeline()//.addLast("logging",new LoggingHandler(LogLevel.INFO))//for debug
                                 .addLast("decoder", adapter.getDecoder())
                                 .addLast("encoder", adapter.getEncoder())
-                                //IdleStateHandler  空闲监测
+                                //IdleStateHandler  空闲监测，服务端进行空闲监测
                                 .addLast("server-idle-handler", new IdleStateHandler(0, 0, idleTimeout, MILLISECONDS))
                                 .addLast("handler", nettyServerHandler);
                     }
