@@ -204,13 +204,17 @@ public class ConditionRouterTest {
 
     @Test
     public void testRoute_ReturnAll() {
-        Router router = new ConditionRouterFactory().getRouter(getRouteUrl("host = " + NetUtils.getLocalHost() + " => " + " host = " + NetUtils.getLocalHost()));
+        //host = 10.20.153.10 => host = 10.20.153.11
+        //该条规则表示 IP 为 10.20.153.10 的服务消费者只可调用 IP 为 10.20.153.11 机器上的服务
+        //Router router = new ConditionRouterFactory().getRouter(getRouteUrl("host = " + NetUtils.getLocalHost() + " => " + " host = " + NetUtils.getLocalHost()));
+        Router router = new ConditionRouterFactory().getRouter(getRouteUrl("host = " + NetUtils.getLocalHost() + " => " ));
         List<Invoker<String>> invokers = new ArrayList<Invoker<String>>();
         invokers.add(new MockInvoker<String>(URL.valueOf("dubbo://" + NetUtils.getLocalHost() + ":20880/com.foo.BarService")));
-        invokers.add(new MockInvoker<String>(URL.valueOf("dubbo://" + NetUtils.getLocalHost() + ":20880/com.foo.BarService")));
-        invokers.add(new MockInvoker<String>(URL.valueOf("dubbo://" + NetUtils.getLocalHost() + ":20880/com.foo.BarService")));
+        invokers.add(new MockInvoker<String>(URL.valueOf("dubbo://127.0.0.1:20880/com.foo.BarService")));
+        invokers.add(new MockInvoker<String>(URL.valueOf("dubbo://127.0.0.2:20880:20880/com.foo.BarService")));
         List<Invoker<String>> filteredInvokers = router.route(invokers, URL.valueOf("consumer://" + NetUtils.getLocalHost() + "/com.foo.BarService"), new RpcInvocation());
-        Assertions.assertEquals(invokers, filteredInvokers);
+//        Assertions.assertEquals(invokers, filteredInvokers);
+        Assertions.assertEquals(2, filteredInvokers.size());
     }
 
     @Test

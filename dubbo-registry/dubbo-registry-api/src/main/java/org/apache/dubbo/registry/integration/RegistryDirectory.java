@@ -68,7 +68,12 @@ import static org.apache.dubbo.common.Constants.ROUTE_PROTOCOL;
 
 
 /**
- * RegistryDirectory
+ * RegistryDirectory 服务目录
+ * 1、服务目录中存储了一些和服务提供者有关的信息，通过服务目录，服务消费者可获取到服务提供者的信息，比如 ip、端口、服务协议等。
+ *  服务目录，它可以看做是 Invoker 集合，且这个集合中的元素会随注册中心的变化而进行动态调整。
+ *
+ *
+ *
  */
 public class RegistryDirectory<T> extends AbstractDirectory<T> implements NotifyListener {
 
@@ -187,6 +192,12 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
         }
     }
 
+    /**
+     * @param urls The list of registered information ,
+     * is always not empty. The meaning is the same as the return value of {@link org.apache.dubbo.registry.RegistryService#lookup(URL)}.
+     * 1、当注册中心接口服务地址发生变化的时候，会通知RegistryDirectory服务目录进行invoker更新，也就是refreshOverrideAndInvoker
+     *
+     */
     @Override
     public synchronized void notify(List<URL> urls) {
         Map<String, List<URL>> categoryUrls = urls.stream()
@@ -557,6 +568,10 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
         List<Invoker<T>> invokers = null;
         try {
             // Get invokers from cache, only runtime routers will be executed.
+            /**
+             * 通过路由获取invokers，RouterChain 持有invokers对象引用
+             * List<Router> routers，包括 TagRouter、AppRouter、ServiceRouter
+             */
             invokers = routerChain.route(getConsumerUrl(), invocation);
         } catch (Throwable t) {
             logger.error("Failed to execute router: " + getUrl() + ", cause: " + t.getMessage(), t);
