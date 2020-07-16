@@ -86,7 +86,10 @@ public class NettyClient extends AbstractClient {
                 int heartbeatInterval = UrlUtils.getIdleTimeout(getUrl());
                 NettyCodecAdapter adapter = new NettyCodecAdapter(getCodec(), getUrl(), NettyClient.this);
                 ch.pipeline()//.addLast("logging",new LoggingHandler(LogLevel.INFO))//for debug
-                        //编解码处理
+                        /**
+                         * 编解码处理，InternalDecoder.decode -> Codec.decode -> DubboCountC.decode
+                         * DubboCountCodec implements Codec2
+                         */
                         .addLast("decoder", adapter.getDecoder())
                         .addLast("encoder", adapter.getEncoder())
                         .addLast("client-idle-handler", new IdleStateHandler(heartbeatInterval, 0, 0, MILLISECONDS))

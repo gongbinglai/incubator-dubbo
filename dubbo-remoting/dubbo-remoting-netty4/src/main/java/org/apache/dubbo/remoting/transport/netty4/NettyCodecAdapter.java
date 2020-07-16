@@ -67,6 +67,15 @@ final class NettyCodecAdapter {
             Channel ch = ctx.channel();
             NettyChannel channel = NettyChannel.getOrAddChannel(ch, url, handler);
             try {
+                /**
+                 * DubboCodec or ExchangeCodec
+                 * 通过<dubbo:protocol name="dubbo" serialization="hessian2" codec="dubbo"/>中的codec配置协议编码方式，默认为dubbo
+                 * transport=org.apache.dubbo.remoting.transport.codec.TransportCodec
+                 * telnet=org.apache.dubbo.remoting.telnet.codec.TelnetCodec
+                 * exchange=org.apache.dubbo.remoting.exchange.codec.ExchangeCodec
+                 * dubbo=org.apache.dubbo.rpc.protocol.dubbo.DubboCountCodec
+                 */
+
                 codec.encode(channel, buffer, msg);
             } finally {
                 NettyChannel.removeChannelIfDisconnected(ch);

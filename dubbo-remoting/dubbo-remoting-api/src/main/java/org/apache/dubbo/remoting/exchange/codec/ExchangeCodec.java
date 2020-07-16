@@ -208,6 +208,37 @@ public class ExchangeCodec extends TelnetCodec {
     }
 
     protected void encodeRequest(Channel channel, ChannelBuffer buffer, Request req) throws IOException {
+        /**
+         * channel通道如下：
+         * channel [id: 0x779ae9a3, L:/10.0.106.243:36488 - R:/10.0.106.243:20880]
+         * url:
+         * dubbo://10.0.106.243:20880/org.apache.dubbo.demo.DemoService?
+         * anyhost=true&application=demo-consumer&
+         * bean.name=org.apache.dubbo.demo.DemoService&
+         * check=false&codec=dubbo&
+         * default.cluster=failover&default.loadbalance=random&
+         * dubbo=2.0.2&generic=false&group=&heartbeat=60000&
+         * interface=org.apache.dubbo.demo.DemoService&
+         * methods=sayHello&pid=11872&qos.port=33333&
+         * register.ip=10.0.106.243&
+         * remote.application=demo-provider&remote.timestamp=1594892507282&
+         * retries=2&
+         * serialization=hessian2&
+         * side=consumer&timestamp=1594894581620
+         *
+         * req请求内容如下：
+         * Request [
+         * id=0,version=2.0.2,
+         * twoway=true,event=false,broken=false,
+         * data=RpcInvocation [
+         * 	methodName=sayHello,
+         * 	parameterTypes=[class java.lang.String],
+         * 	arguments=[world],
+         * 	attachments={path=org.apache.dubbo.demo.DemoService, interface=org.apache.dubbo.demo.DemoService, version=0.0.0}
+         * ]
+         * ]
+         */
+        //获取序列化方式，从请求的url中获取序列化方式，默认为hession2
         Serialization serialization = getSerialization(channel);
         // header.
         byte[] header = new byte[HEADER_LENGTH];

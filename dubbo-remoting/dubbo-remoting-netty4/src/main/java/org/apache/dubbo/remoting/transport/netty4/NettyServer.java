@@ -96,6 +96,7 @@ public class NettyServer extends AbstractServer implements Server {
                         int idleTimeout = UrlUtils.getIdleTimeout(getUrl());
                         NettyCodecAdapter adapter = new NettyCodecAdapter(getCodec(), getUrl(), NettyServer.this);
                         ch.pipeline()//.addLast("logging",new LoggingHandler(LogLevel.INFO))//for debug
+                                //编解码处理器，注意顺序一定要是先解码，再编码
                                 .addLast("decoder", adapter.getDecoder())
                                 .addLast("encoder", adapter.getEncoder())
                                 //IdleStateHandler  空闲监测，服务端进行空闲监测
