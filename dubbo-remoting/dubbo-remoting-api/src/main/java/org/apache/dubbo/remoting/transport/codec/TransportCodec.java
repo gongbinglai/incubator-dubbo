@@ -38,7 +38,9 @@ public class TransportCodec extends AbstractCodec {
     @Override
     public void encode(Channel channel, ChannelBuffer buffer, Object message) throws IOException {
         OutputStream output = new ChannelBufferOutputStream(buffer);
+        //对传输的数据进行序列化，将对象转为二进制格式或者文本格式（json，xml）数据，用来在网络上传输，在这只是创建了Hessian2ObjectOutput
         ObjectOutput objectOutput = getSerialization(channel).serialize(channel.getUrl(), output);
+        //最终调用的是 mH2o.writeObject(obj);
         encodeData(channel, objectOutput, message);
         objectOutput.flushBuffer();
         if (objectOutput instanceof Cleanable) {
