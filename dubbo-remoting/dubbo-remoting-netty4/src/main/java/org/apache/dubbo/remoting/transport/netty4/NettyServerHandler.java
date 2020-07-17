@@ -88,6 +88,19 @@ public class NettyServerHandler extends ChannelDuplexHandler {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         NettyChannel channel = NettyChannel.getOrAddChannel(ctx.channel(), url, handler);
         try {
+            /**
+             * dubbo客户端发送的消息内容为：
+             *Request [
+             * id=0, version=2.0.2, twoway=true, event=false, broken=false,
+             * data=RpcInvocation [
+             * methodName=sayHello, parameterTypes=[class java.lang.String],
+             * arguments=[world], attachments={path=org.apache.dubbo.demo.DemoService, input=198, dubbo=2.0.2, interface=org.apache.dubbo.demo.DemoService, version=0.0.0}
+             * ]
+             * ]
+             *
+             * ChannelEventRunnable.run
+             * DecocodeHandler.received
+             */
             handler.received(channel, msg);
         } finally {
             NettyChannel.removeChannelIfDisconnected(ctx.channel());
