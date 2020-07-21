@@ -41,6 +41,8 @@ import java.util.Set;
  * <p>
  * <a href="http://en.wikipedia.org/wiki/Failover">Failover</a>
  *
+ * 失败重试处理
+ *
  */
 public class FailoverClusterInvoker<T> extends AbstractClusterInvoker<T> {
 
@@ -70,10 +72,12 @@ public class FailoverClusterInvoker<T> extends AbstractClusterInvoker<T> {
             //NOTE: if `invokers` changed, then `invoked` also lose accuracy.
             if (i > 0) {
                 checkWhetherDestroyed();
-
-                //列出所有的服务目录
+                /**
+                 * 列出所有的服务目录，在doList的时候执行了路由策略（条件路由）
+                 * 在进行重试前重新列举 Invoker，这样做的好处是，如果某个服务挂了，通过调用 list 可得到最新可用的 Invoker 列表
+                 */
                 copyInvokers = list(invocation);
-                // check again
+                // check again 对 copyinvokers 进行判空检查
                 checkInvokers(copyInvokers, invocation);
             }
             //根据负载均衡策略，获取真正要执行的Invoker，AbstractClusterInvoker
@@ -101,6 +105,7 @@ public class FailoverClusterInvoker<T> extends AbstractClusterInvoker<T> {
                 }
                 return result;
             } catch (RpcException e) {
+                //如果是业务异常的话，直接抛出异常，不再重试，其它异常的话如未知异常0，网络异常1，超时异常2则会进行重试
                 if (e.isBiz()) { // biz exception.
                     throw e;
                 }
