@@ -70,10 +70,12 @@ public class MockClusterInvoker<T> implements Invoker<T> {
     public Result invoke(Invocation invocation) throws RpcException {
         Result result = null;
 
+        //获取mock 配置值
         String value = directory.getUrl().getMethodParameter(invocation.getMethodName(), Constants.MOCK_KEY, Boolean.FALSE.toString()).trim();
         if (value.length() == 0 || value.equalsIgnoreCase("false")) {
             /**
-             * no mock FailOverClusterInvoker -> AbstractClusterInvoker，这里的invocation为RpcInvocation
+             * no mock逻辑，直接调用其他 Invoker 对象的 invoke 方法，
+             * FailOverClusterInvoker -> AbstractClusterInvoker，这里的invocation为RpcInvocation
              * RpcInvocation记录了要执行的类、方法、参数
              */
             result = this.invoker.invoke(invocation);
@@ -82,10 +84,12 @@ public class MockClusterInvoker<T> implements Invoker<T> {
                 logger.warn("force-mock: " + invocation.getMethodName() + " force-mock enabled , url : " + directory.getUrl());
             }
             //force:direct mock
+            // force:xxx 直接执行 mock 逻辑，不发起远程调用
             result = doMockInvoke(invocation, null);
         } else {
-            //fail-mock
+            //fail-mock 表示消费方对调用服务失败后，再执行 mock 逻辑，不抛出异常
             try {
+                //调用其他 Invoker 对象的 invoke 方法
                 result = this.invoker.invoke(invocation);
             } catch (RpcException e) {
                 if (e.isBiz()) {
@@ -95,6 +99,11 @@ public class MockClusterInvoker<T> implements Invoker<T> {
                 if (logger.isWarnEnabled()) {
                     logger.warn("fail-mock: " + invocation.getMethodName() + " fail-mock enabled , url : " + directory.getUrl(), e);
                 }
+                /**
+                 * 调用invoker失败后，执行mock逻辑
+                 * mockInvoker
+                 */
+
                 result = doMockInvoke(invocation, e);
             }
         }

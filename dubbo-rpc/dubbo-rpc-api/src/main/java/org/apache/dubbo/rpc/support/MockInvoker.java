@@ -87,11 +87,16 @@ final public class MockInvoker<T> implements Invoker<T> {
 
     @Override
     public Result invoke(Invocation invocation) throws RpcException {
+
+        //判断方法是否配置了mock
         String mock = getUrl().getParameter(invocation.getMethodName() + "." + Constants.MOCK_KEY);
         if (invocation instanceof RpcInvocation) {
             ((RpcInvocation) invocation).setInvoker(this);
         }
         if (StringUtils.isBlank(mock)) {
+            /**
+             * 如果为空的话，获取url上配置的mock，也就是服务级别mock
+             */
             mock = getUrl().getParameter(Constants.MOCK_KEY);
         }
 
@@ -99,7 +104,9 @@ final public class MockInvoker<T> implements Invoker<T> {
             throw new RpcException(new IllegalAccessException("mock can not be null. url :" + url));
         }
         mock = normalizeMock(URL.decode(mock));
+        //如果是return aa这种方式
         if (mock.startsWith(Constants.RETURN_PREFIX)) {
+            //获取return 后面的值作为返回值
             mock = mock.substring(Constants.RETURN_PREFIX.length()).trim();
             try {
                 Type[] returnTypes = RpcUtils.getReturnTypes(invocation);

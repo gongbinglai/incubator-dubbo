@@ -120,7 +120,7 @@ public class MockClusterInvokerTest {
         url = url.addParameter(Constants.MOCK_KEY, "force:return null");
 
         URL mockUrl = URL.valueOf("mock://localhost/" + IHelloService.class.getName()
-                + "?getSomething.mock=return aa&getSomething3xx.mock=return xx")
+                + "?getSomething.mock=return aa&getSomething3.mock=return xx")
                 .addParameters(url.getParameters());
 
         Protocol protocol = new MockProtocol();
@@ -132,6 +132,12 @@ public class MockClusterInvokerTest {
         invocation.setMethodName("getSomething");
         Result ret = cluster.invoke(invocation);
         Assertions.assertEquals("aa", ret.getValue());
+
+        //Configured with mock
+        invocation = new RpcInvocation();
+        invocation.setMethodName("getSomething3");
+        ret = cluster.invoke(invocation);
+        Assertions.assertEquals("xx", ret.getValue());
 
         // If no mock was configured, return null directly
         invocation = new RpcInvocation();
