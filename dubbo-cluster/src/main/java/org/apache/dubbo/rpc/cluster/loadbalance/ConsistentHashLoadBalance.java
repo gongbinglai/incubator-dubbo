@@ -33,6 +33,14 @@ import java.util.concurrent.ConcurrentMap;
 
 /**
  * ConsistentHashLoadBalance
+ * 一致性 hash 算法
+ * 算法提出之初是用于大规模缓存系统的负载均衡。它的工作过程是这样的，首先根据 ip 或者其他的信息为缓存节点生成一个hash，并将这个hash投射到 [0, 2的32次方 - 1] 的圆环上，
+ * （1）当有查询或写入请求时，则为缓存项的 key 生成一个 hash 值。然后查找第一个大于或等于该 hash 值的缓存节点，并到这个节点中查询或写入缓存项
+ * （2）如果当前节点挂了，则在下一次查询或写入缓存时，为缓存项查找另一个大于其 hash 值的缓存节点即可
+ *
+ * dubbo中的一致性哈希：
+ * dubbo引入了虚拟节点，让 Invoker 在圆环上分散开来，避免数据倾斜问题。所谓数据倾斜是指，由于节点不够分散，导致大量请求落到了同一个节点上，而其他节点只会接收到了少量请求的情况
+ *
  */
 public class ConsistentHashLoadBalance extends AbstractLoadBalance {
     public static final String NAME = "consistenthash";

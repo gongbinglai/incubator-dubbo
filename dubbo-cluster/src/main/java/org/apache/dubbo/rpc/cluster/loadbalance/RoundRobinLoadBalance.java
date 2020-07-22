@@ -32,9 +32,19 @@ import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Round robin load balance.
- * 加权轮询，
+ * 加权轮询，dubbo默认配置的负载均衡算法为加权轮询，加权轮询的思想如下：
+ * 服务器 A、B、C 权重比为 5:2:1。那么在8次请求中，服务器 A 将收到其中的5次请求，服务器 B 会收到其中的2次请求，服务器 C 则收到其中的1次请求。
+ * 1、客户端配置，支持服务、方法级别
+ *<dubbo:reference interface="..." loadbalance="roundrobin" />
+ *<dubbo:reference interface="...">
+ *     <dubbo:method name="..." loadbalance="roundrobin"/>
+ * </dubbo:service>
  *
- *
+ * 2、服务端配置，支持服务、方法级别
+ * <dubbo:service interface="..." loadbalance="roundrobin" />
+ * <dubbo:service interface="...">
+ *     <dubbo:method name="..." loadbalance="roundrobin"/>
+ * </dubbo:service>
  *
  */
 public class RoundRobinLoadBalance extends AbstractLoadBalance {
@@ -105,7 +115,7 @@ public class RoundRobinLoadBalance extends AbstractLoadBalance {
             String identifyString = invoker.getUrl().toIdentityString();
             WeightedRoundRobin weightedRoundRobin = map.get(identifyString);
             int weight = getWeight(invoker, invocation);
-
+            //检测当前 Invoker 是否有对应的 WeightedRoundRobin，没有则创建
             if (weightedRoundRobin == null) {
                 weightedRoundRobin = new WeightedRoundRobin();
                 weightedRoundRobin.setWeight(weight);
@@ -117,9 +127,12 @@ public class RoundRobinLoadBalance extends AbstractLoadBalance {
             }
             long cur = weightedRoundRobin.increaseCurrent();
             weightedRoundRobin.setLastUpdate(now);
+            // 找出最大的 current
             if (cur > maxCurrent) {
                 maxCurrent = cur;
+                // 将具有最大 current 权重的 Invoker 赋值给 selectedInvoker
                 selectedInvoker = invoker;
+                // 将 Invoker 对应的 weightedRoundRobin 赋值给 selectedWRR，留作后用
                 selectedWRR = weightedRoundRobin;
             }
             totalWeight += weight;

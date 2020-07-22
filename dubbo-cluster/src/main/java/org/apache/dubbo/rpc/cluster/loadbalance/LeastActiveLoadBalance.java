@@ -31,6 +31,10 @@ import java.util.concurrent.ThreadLocalRandom;
  * If there is only one invoker, use the invoker directly;
  * if there are multiple invokers and the weights are not the same, then random according to the total weight;
  * if there are multiple invokers and the same weight, then randomly called.
+ *
+ * 最小活跃数负载均衡，活跃调用数越小，表明该服务提供者效率越高，单位时间内可处理更多的请求
+ *
+ * 在具体实现中，每个服务提供者对应一个活跃数 active。初始情况下，所有服务提供者活跃数均为0。每收到一个请求，活跃数加1，完成请求后则将活跃数减1。
  */
 public class LeastActiveLoadBalance extends AbstractLoadBalance {
 
