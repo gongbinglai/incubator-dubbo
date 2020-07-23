@@ -126,6 +126,13 @@ public class DubboProtocol extends AbstractProtocol {
             RpcContext rpcContext = RpcContext.getContext();
             rpcContext.setRemoteAddress(channel.getRemoteAddress());
             // 通过 Invoker 调用具体的服务
+            /**
+             *         —> DubboProtocol.requestHandler#reply(ExchangeChannel, Object)
+             *           —> Filter#invoke(Invoker, Invocation)
+             *             —> AbstractProxyInvoker#invoke(Invocation)
+             *               —> Wrapper0#invokeMethod(Object, String, Class[], Object[])
+             *                 —> DemoServiceImpl#sayHello(String)
+             */
             Result result = invoker.invoke(inv);
 
             if (result instanceof AsyncRpcResult) {

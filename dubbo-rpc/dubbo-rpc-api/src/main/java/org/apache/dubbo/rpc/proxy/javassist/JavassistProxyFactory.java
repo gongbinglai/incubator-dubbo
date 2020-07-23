@@ -26,6 +26,30 @@ import org.apache.dubbo.rpc.proxy.InvokerInvocationHandler;
 
 /**
  * JavaassistRpcProxyFactory
+ *
+ *  生成的代理类Wrapper代码如下：
+ *     // 省略其他方法
+ *     public Object invokeMethod(Object object, String string, Class[] arrclass, Object[] arrobject) throws InvocationTargetException {
+ *         DemoService demoService;
+ *         try {
+ *             // 类型转换
+ *             demoService = (DemoService)object;
+ *         }
+ *         catch (Throwable throwable) {
+ *             throw new IllegalArgumentException(throwable);
+ *         }
+ *         try {
+ *             // 根据方法名调用指定的方法
+ *             if ("sayHello".equals(string) && arrclass.length == 1) {
+ *                 return demoService.sayHello((String)arrobject[0]);
+ *             }
+ *         }
+ *         catch (Throwable throwable) {
+ *             throw new InvocationTargetException(throwable);
+ *         }
+ *         throw new NoSuchMethodException(new StringBuffer().append("Not found method \"").append(string).append("\" in class com.alibaba.dubbo.demo.DemoService.").toString());
+ *     }
+ *
  */
 public class JavassistProxyFactory extends AbstractProxyFactory {
 
@@ -38,12 +62,15 @@ public class JavassistProxyFactory extends AbstractProxyFactory {
     @Override
     public <T> Invoker<T> getInvoker(T proxy, Class<T> type, URL url) {
         // TODO Wrapper cannot handle this scenario correctly: the classname contains '$'
+        //Wrapper 是一个抽象类，其中 invokeMethod 是一个抽象方法
         final Wrapper wrapper = Wrapper.getWrapper(proxy.getClass().getName().indexOf('$') < 0 ? proxy.getClass() : type);
         return new AbstractProxyInvoker<T>(proxy, type, url) {
             @Override
             protected Object doInvoke(T proxy, String methodName,
                                       Class<?>[] parameterTypes,
                                       Object[] arguments) throws Throwable {
+
+                //通过这最终调用具体的服务类
                 return wrapper.invokeMethod(proxy, methodName, parameterTypes, arguments);
             }
         };
