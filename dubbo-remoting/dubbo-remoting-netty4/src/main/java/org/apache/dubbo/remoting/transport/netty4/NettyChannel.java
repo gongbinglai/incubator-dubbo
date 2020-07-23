@@ -98,7 +98,7 @@ final class NettyChannel extends AbstractChannel {
         boolean success = true;
         int timeout = 0;
         try {
-            //此时这里的channel为netty4的NioServerSocketChannel
+            //此时这里的channel为netty4的NioServerSocketChannel，最终还是调用netty的writeAndFlush来发送数据
             ChannelFuture future = channel.writeAndFlush(message);
             if (sent) {
                 timeout = getUrl().getPositiveParameter(Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT);
