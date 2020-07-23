@@ -95,6 +95,8 @@ public class DubboInvoker<T> extends AbstractInvoker<T> {
             if (isOneway) {
                 //只发送请求，返回结果为空，不关心返回结果
                 boolean isSent = getUrl().getMethodParameter(methodName, Constants.SENT_KEY, false);
+
+                //HeaderExchangeClient
                 currentClient.send(inv, isSent);
                 RpcContext.getContext().setFuture(null);
                 return new RpcResult();

@@ -55,9 +55,8 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
         try {
             /**
              * 在doOpen的时候创建了客户端的NioEventLoop，bootstrap
-             * 然后设置addLast 设置handler
+             * 然后addLast添加handler
              */
-
             doOpen();
         } catch (Throwable t) {
             close();
