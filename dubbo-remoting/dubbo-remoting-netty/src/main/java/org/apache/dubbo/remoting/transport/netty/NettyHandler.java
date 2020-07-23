@@ -87,6 +87,20 @@ public class NettyHandler extends SimpleChannelHandler {
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
         NettyChannel channel = NettyChannel.getOrAddChannel(ctx.getChannel(), url, handler);
         try {
+            /**
+             * 请求Request对象会被依次传递给 NettyServer、MultiMessageHandler、HeartbeatHandler
+             * 以及 AllChannelHandler。最后由 AllChannelHandler 将该对象封装到 Runnable 实现类对象中，并将 Runnable 放入线程池中执行后续的调用逻辑
+             *
+             * 调用结构如下：
+             * NettyHandler#messageReceived(ChannelHandlerContext, MessageEvent)
+             *   —> AbstractPeer#received(Channel, Object)
+             *     —> MultiMessageHandler#received(Channel, Object)
+             *       —> HeartbeatHandler#received(Channel, Object)
+             *         —> AllChannelHandler#received(Channel, Object)
+             *           —> ExecutorService#execute(Runnable)    // 由线程池执行后续的调用逻辑
+             *
+             * 最终根据线程派发模型来执行业务方法
+             */
             handler.received(channel, e.getMessage());
         } finally {
             NettyChannel.removeChannelIfDisconnected(ctx.getChannel());

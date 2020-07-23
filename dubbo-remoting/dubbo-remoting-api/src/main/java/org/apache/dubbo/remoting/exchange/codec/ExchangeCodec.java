@@ -138,6 +138,7 @@ public class ExchangeCodec extends TelnetCodec {
         byte flag = header[2], proto = (byte) (flag & SERIALIZATION_MASK);
         // get request id.
         long id = Bytes.bytes2long(header, 4);
+
         if ((flag & FLAG_REQUEST) == 0) {
             // decode response.
             Response res = new Response(id);
@@ -152,8 +153,10 @@ public class ExchangeCodec extends TelnetCodec {
                 if (status == Response.OK) {
                     Object data;
                     if (res.isHeartbeat()) {
+                        // 对心跳包进行解码，该方法已被标注为废弃
                         data = decodeHeartbeatData(channel, in);
                     } else if (res.isEvent()) {
+                        // 对事件数据进行解码
                         data = decodeEventData(channel, in);
                     } else {
                         data = decodeResponseData(channel, in, getRequestData(id));
