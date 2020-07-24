@@ -64,8 +64,9 @@ public class DubboCodec extends ExchangeCodec implements Codec2 {
         byte flag = header[2], proto = (byte) (flag & SERIALIZATION_MASK);
         // get request id.
         long id = Bytes.bytes2long(header, 4);
+
         if ((flag & FLAG_REQUEST) == 0) {
-            // decode response.
+            // decode response.  客户端对服务端的响应进行解码，解码后生成response对象
             Response res = new Response(id);
             if ((flag & FLAG_EVENT) != 0) {
                 res.setEvent(true);
@@ -83,13 +84,17 @@ public class DubboCodec extends ExchangeCodec implements Codec2 {
                         data = decodeEventData(channel, in);
                     } else {
                         DecodeableRpcResult result;
+                        // 根据 url 参数决定是否在 IO 线程上执行解码逻辑
                         if (channel.getUrl().getParameter(
                                 Constants.DECODE_IN_IO_THREAD_KEY,
                                 Constants.DEFAULT_DECODE_IN_IO_THREAD)) {
+                            // 创建 DecodeableRpcResult 对象
                             result = new DecodeableRpcResult(channel, res, is,
                                     (Invocation) getRequestData(id), proto);
+                            // 进行后续的解码工作
                             result.decode();
                         } else {
+                            //对response数据进行解码
                             result = new DecodeableRpcResult(channel, res,
                                     new UnsafeByteArrayInputStream(readMessageData(is)),
                                     (Invocation) getRequestData(id), proto);
@@ -109,7 +114,7 @@ public class DubboCodec extends ExchangeCodec implements Codec2 {
             }
             return res;
         } else {
-            // decode request.
+            // decode request.  服务端对请求的数据进行解码，解码后生成request对象
             Request req = new Request(id);
             req.setVersion(Version.getProtocolVersion());
             req.setTwoWay((flag & FLAG_TWOWAY) != 0);
