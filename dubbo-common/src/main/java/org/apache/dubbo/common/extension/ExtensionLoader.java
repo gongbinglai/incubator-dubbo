@@ -871,9 +871,33 @@ public class ExtensionLoader<T> {
     }
 
     private Class<?> createAdaptiveExtensionClass() {
+        /**
+         * 构建自适应拓展代码，生成的代码如下：
+         * package org.apache.dubbo.common.extension.ext8_add;
+         * import org.apache.dubbo.common.extension.ExtensionLoader;
+         * public class AddExt2$Adaptive implements org.apache.dubbo.common.extension.ext8_add.AddExt2 {
+         * 	public java.lang.String echo(org.apache.dubbo.common.URL arg0, java.lang.String arg1)  {
+         * 		if (arg0 == null) throw new IllegalArgumentException("url == null");
+         * 		org.apache.dubbo.common.URL url = arg0;
+         * 		String extName = url.getParameter("add.ext2", "impl1");
+         * 		if(extName == null) throw new IllegalStateException("Failed to get extension (org.apache.dubbo.common.extension.ext8_add.AddExt2) name from url (" + url.toString() + ") use keys([add.ext2])");
+         * 		org.apache.dubbo.common.extension.ext8_add.AddExt2 extension = (org.apache.dubbo.common.extension.ext8_add.AddExt2)ExtensionLoader.getExtensionLoader(org.apache.dubbo.common.extension.ext8_add.AddExt2.class).getExtension(extName);
+         * 		return extension.echo(arg0, arg1);
+         *        }
+         * }
+         *
+         * 可以看到最终调用的还是ExtensionLoader.getExtensionLoader().getExtension方法来获取Extension扩展对象
+         *
+         * 根据运行时参数来决定扩展点对象
+         *
+         *
+         */
+
         String code = new AdaptiveClassCodeGenerator(type, cachedDefaultName).generate();
         ClassLoader classLoader = findClassLoader();
+        //获取编译器实现类 AdaptiveCompiler
         org.apache.dubbo.common.compiler.Compiler compiler = ExtensionLoader.getExtensionLoader(org.apache.dubbo.common.compiler.Compiler.class).getAdaptiveExtension();
+        // 编译代码，生成 Class，最终返回的对象为AddExt2$Adaptive
         return compiler.compile(code, classLoader);
     }
 

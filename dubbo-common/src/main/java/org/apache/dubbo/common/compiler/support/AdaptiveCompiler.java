@@ -42,6 +42,7 @@ public class AdaptiveCompiler implements Compiler {
         } else {
             compiler = loader.getDefaultExtension();
         }
+        //JavassistCompiler
         return compiler.compile(code, classLoader);
     }
 

@@ -50,6 +50,7 @@ public abstract class AbstractCompiler implements Compiler {
         }
         String className = pkg != null && pkg.length() > 0 ? pkg + "." + cls : cls;
         try {
+            //最终还是通过反射生成AddExt2$Adaptive代理对象
             return Class.forName(className, true, ClassHelper.getCallerClassLoader(getClass()));
         } catch (ClassNotFoundException e) {
             if (!code.endsWith("}")) {
