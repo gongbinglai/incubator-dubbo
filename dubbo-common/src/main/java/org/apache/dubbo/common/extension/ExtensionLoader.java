@@ -524,6 +524,7 @@ public class ExtensionLoader<T> {
     private T createExtension(String name) {
         //获取扩展点对应的class
         //dubbo=org.apache.dubbo.rpc.protocol.dubbo.DubboProtocol
+        // getExtensionClasses 通过加载扩展点配置文件，获取扩展点对应的class
         Class<?> clazz = getExtensionClasses().get(name);
         if (clazz == null) {
             throw findException(name);
@@ -625,9 +626,11 @@ public class ExtensionLoader<T> {
     private Map<String, Class<?>> getExtensionClasses() {
         Map<String, Class<?>> classes = cachedClasses.get();
         if (classes == null) {
+            //同步cachedClasses，双重检查判断
             synchronized (cachedClasses) {
                 classes = cachedClasses.get();
                 if (classes == null) {
+                    //加载扩展点对应的class，并缓存
                     classes = loadExtensionClasses();
                     cachedClasses.set(classes);
                 }
@@ -641,10 +644,13 @@ public class ExtensionLoader<T> {
         cacheDefaultExtensionName();
 
         Map<String, Class<?>> extensionClasses = new HashMap<>();
+        //加载META-INF/dubbo/internal/ 目录下的扩展点配置文件
         loadDirectory(extensionClasses, DUBBO_INTERNAL_DIRECTORY, type.getName());
         loadDirectory(extensionClasses, DUBBO_INTERNAL_DIRECTORY, type.getName().replace("org.apache", "com.alibaba"));
+        //加载META-INF/dubbo/ 目录下的扩展点配置文件
         loadDirectory(extensionClasses, DUBBO_DIRECTORY, type.getName());
         loadDirectory(extensionClasses, DUBBO_DIRECTORY, type.getName().replace("org.apache", "com.alibaba"));
+        //加载META-INF/services/ 目录下的扩展点配置文件
         loadDirectory(extensionClasses, SERVICES_DIRECTORY, type.getName());
         loadDirectory(extensionClasses, SERVICES_DIRECTORY, type.getName().replace("org.apache", "com.alibaba"));
         return extensionClasses;
