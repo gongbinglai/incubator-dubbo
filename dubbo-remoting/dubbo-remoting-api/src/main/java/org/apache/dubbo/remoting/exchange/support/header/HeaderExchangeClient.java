@@ -178,6 +178,7 @@ public class HeaderExchangeClient implements ExchangeClient {
     private void startHeartBeatTask(URL url) {
         if (!client.canHandleIdle()) {
             AbstractTimerTask.ChannelProvider cp = () -> Collections.singletonList(HeaderExchangeClient.this);
+            //取得配置的心跳监测时间，默认60s
             int heartbeat = getHeartbeat(url);
             long heartbeatTick = calculateLeastDuration(heartbeat);
             this.heartBeatTimerTask = new HeartbeatTimerTask(cp, heartbeatTick, heartbeat);

@@ -40,10 +40,14 @@ public class HeartbeatTimerTask extends AbstractTimerTask {
     @Override
     protected void doTask(Channel channel) {
         try {
+            //dubbo 心跳监测任务任务
             Long lastRead = lastRead(channel);
             Long lastWrite = lastWrite(channel);
+            //如果最后一次接收或者发送消息到时间到现在的时间间隔超过了心跳间隔时间
             if ((lastRead != null && now() - lastRead > heartbeat)
                     || (lastWrite != null && now() - lastWrite > heartbeat)) {
+
+                //发一个request请求，事件为心跳事件
                 Request req = new Request();
                 req.setVersion(Version.getProtocolVersion());
                 req.setTwoWay(true);
